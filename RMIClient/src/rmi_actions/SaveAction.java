@@ -5,5 +5,5 @@ import java.rmi.Remote;
 
 public interface SaveAction extends Remote {
 
-	void doSave(Serializable object) throws Exception;
+	long doSave(Serializable object) throws Exception;
 }
