@@ -17,13 +17,13 @@ public class SimpleClient {
         			.getCodeSource().getLocation().toString();
             System.setProperty("java.rmi.server.codebase",codeBasePath);
             System.setProperty("java.security.policy", 
-            		PolicyFileLocator.getLocationOfPolicyFile());
+            		PolicyLoader.getLocationOfPolicyFile());
             if (System.getSecurityManager() == null) {
                 System.setSecurityManager(new SecurityManager());   
             }
-            System.err.println(PolicyFileLocator.getLocationOfPolicyFile());
+            System.err.println(PolicyLoader.getLocationOfPolicyFile());
         	
-        	// get rmi registry on port 1099(I changed in server to 1099 also)
+        	// get rmi registry on port 1099
             Registry registry = LocateRegistry.getRegistry(null, 1099);
             // now we get the action by its name
             SaveAction stub = (SaveAction) registry.lookup("saveAction");
@@ -36,32 +36,22 @@ public class SimpleClient {
         }
 	}
 
+	/**
+	 * for testing purpose
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
-		//remote machine to connect, this time we use localhost
-		String host = "127.0.0.1";
-        try {
-        	
-        	String codeBasePath =  SimpleClient
-        			.class.getProtectionDomain()
-        			.getCodeSource().getLocation().toString();
-            System.setProperty("java.rmi.server.codebase",codeBasePath);
-            System.setProperty("java.security.policy", 
-            		PolicyFileLocator.getLocationOfPolicyFile());
-            if (System.getSecurityManager() == null) {
-                System.setSecurityManager(new SecurityManager());   
-            }
-            System.err.println(PolicyFileLocator.getLocationOfPolicyFile());
-        	
-        	// get rmi registry on port 1099(I changed in server to 1099 also)
-            Registry registry = LocateRegistry.getRegistry(null, 1099);
-            // now we get the action by its name
-            SaveAction stub = (SaveAction) registry.lookup("saveAction");
-            // and save something
-            stub.doSave("this is new message");
-        } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
-            e.printStackTrace();
-        }
+		// we create 10 threads and save concurrently
+		for (int i = 0; i < 10; i++) {
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+				
+					SimpleClient.saveObject("this is test");
+				}
+			}).start();
+		}
 	}
 }
