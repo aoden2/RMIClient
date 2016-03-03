@@ -1,4 +1,4 @@
-package client;
+package rmi_actions;
 
 import java.io.Serializable;
 import java.rmi.Remote;

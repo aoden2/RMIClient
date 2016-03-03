@@ -3,6 +3,8 @@ package client;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import rmi_actions.SaveAction;
+
 public class SimpleClient {
 
 	public static void main(String[] args) {
@@ -11,10 +13,16 @@ public class SimpleClient {
 		String host = "127.0.0.1";
         try {
         	
-        	String codeBasePath =  "file:/C:/Users/Yavar/git2/RMIClient/bin";
+        	String codeBasePath =  SimpleClient
+        			.class.getProtectionDomain()
+        			.getCodeSource().getLocation().toString();
             System.setProperty("java.rmi.server.codebase",codeBasePath);
             System.setProperty("java.security.policy", 
-            		"file:/C:/Users/Yavar/git2/RMIClient/client.policy");
+            		PolicyFileLocator.getLocationOfPolicyFile());
+            if (System.getSecurityManager() == null) {
+                System.setSecurityManager(new SecurityManager());   
+            }
+            System.err.println(PolicyFileLocator.getLocationOfPolicyFile());
         	
         	// get rmi registry on port 1099(I changed in server to 1099 also)
             Registry registry = LocateRegistry.getRegistry(null, 1099);
